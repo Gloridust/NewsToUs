@@ -1,4 +1,5 @@
 import smtplib
+from email.mime.text import MIMEText
 import poplib
 from email import parser
 import sqlite3
@@ -39,8 +40,21 @@ def handle_admin_email(email_content):
 
     # 实现将邮件内容发送给所有注册用户的逻辑
     for user_email in registered_users:
-        # 发送邮件给用户（这里只是打印信息，实际应用中需要连接到SMTP服务器发送邮件）
-        print(f"Sending content email to {user_email}:\n{email_content}")
+        # 构建邮件内容
+        subject = "Content for registered users"
+        body = f"Hello {user_email},\n\n{email_content}"
+        message = MIMEText(body)
+        message['Subject'] = subject
+        message['From'] = 'your_email@gmail.com'  # 你的管理员邮箱
+        message['To'] = user_email
+
+        # 连接到SMTP服务器并发送邮件
+        with smtplib.SMTP('smtp.gmail.com', 587) as server:  # 修改为你的SMTP服务器地址和端口
+            server.starttls()
+            server.login('your_email@gmail.com', 'your_email_password')  # 你的管理员邮箱和密码
+            server.sendmail('your_email@gmail.com', user_email, message.as_string())
+
+        print(f"Content email sent to {user_email}.")
 
 # 连接到邮件服务器
 mail_server = poplib.POP3('your_mail_server')  # 修改为你的邮件服务器地址
