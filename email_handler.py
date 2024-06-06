@@ -3,6 +3,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.parser import BytesParser
+from email.header import decode_header
 from config import SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD, IMAP_SERVER, SMTP_SERVER, SMTP_PORT, ADMIN_EMAIL
 from database import add_subscriber, get_subscribers, mark_welcome_sent, get_new_subscribers
 
@@ -22,8 +23,10 @@ def check_incoming_emails():
                     email_message = BytesParser().parsebytes(raw_email)
                     
                     sender = email_message['From']
-                    if sender == ADMIN_EMAIL:
-                        subject = email_message['Subject']
+                    if sender.strip() == ADMIN_EMAIL:
+                        subject, encoding = decode_header(email_message['Subject'])[0]
+                        if isinstance(subject, bytes):
+                            subject = subject.decode(encoding or 'utf-8')
                         content = email_message.get_payload(decode=True).decode()
                         send_newsletter(subject, content)
                     else:
