@@ -4,7 +4,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.parser import BytesParser
 from config import SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD, IMAP_SERVER, SMTP_SERVER, SMTP_PORT, ADMIN_EMAIL
-from database import add_subscriber, get_subscribers
+from database import add_subscriber, get_subscribers, mark_welcome_sent, get_new_subscribers
 
 def check_incoming_emails():
     mail = imaplib.IMAP4_SSL(IMAP_SERVER)
@@ -24,7 +24,9 @@ def check_incoming_emails():
             send_newsletter(content)
         else:
             add_subscriber(sender)
-            send_welcome_email(sender)
+            if sender in get_new_subscribers():
+                send_welcome_email(sender)
+                mark_welcome_sent(sender)
 
     mail.close()
     mail.logout()
@@ -53,13 +55,4 @@ def send_newsletter(content):
         msg = MIMEMultipart()
         msg['From'] = SYSTEM_EMAIL
         msg['To'] = subscriber
-        msg['Subject'] = "Newsletter"
-        
-        body = MIMEText(content, 'plain')
-        msg.attach(body)
-
-        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-        server.starttls()
-        server.login(SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD)
-        server.sendmail(SYSTEM_EMAIL, subscriber, msg.as_string())
-        server.quit()
+        msg['Subject']

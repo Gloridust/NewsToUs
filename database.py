@@ -6,7 +6,8 @@ def init_db():
     c.execute('''
         CREATE TABLE IF NOT EXISTS subscribers (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT NOT NULL UNIQUE
+            email TEXT NOT NULL UNIQUE,
+            welcome_sent BOOLEAN NOT NULL DEFAULT 0
         )
     ''')
     conn.commit()
@@ -23,6 +24,21 @@ def get_subscribers():
     conn = sqlite3.connect('subscribers.db')
     c = conn.cursor()
     c.execute('SELECT email FROM subscribers')
+    emails = [row[0] for row in c.fetchall()]
+    conn.close()
+    return emails
+
+def mark_welcome_sent(email):
+    conn = sqlite3.connect('subscribers.db')
+    c = conn.cursor()
+    c.execute('UPDATE subscribers SET welcome_sent = 1 WHERE email = ?', (email,))
+    conn.commit()
+    conn.close()
+
+def get_new_subscribers():
+    conn = sqlite3.connect('subscribers.db')
+    c = conn.cursor()
+    c.execute('SELECT email FROM subscribers WHERE welcome_sent = 0')
     emails = [row[0] for row in c.fetchall()]
     conn.close()
     return emails
