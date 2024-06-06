@@ -24,9 +24,13 @@ def check_incoming_emails():
             send_newsletter(content)
         else:
             add_subscriber(sender)
-            if sender in get_new_subscribers():
-                send_welcome_email(sender)
-                mark_welcome_sent(sender)
+            new_subscribers = get_new_subscribers()
+            if sender in new_subscribers:
+                try:
+                    send_welcome_email(sender)
+                    mark_welcome_sent(sender)
+                except smtplib.SMTPDataError as e:
+                    print(f"Failed to send welcome email to {sender}: {e}")
 
     mail.close()
     mail.logout()
@@ -55,4 +59,16 @@ def send_newsletter(content):
         msg = MIMEMultipart()
         msg['From'] = SYSTEM_EMAIL
         msg['To'] = subscriber
-        msg['Subject']
+        msg['Subject'] = "Newsletter"
+        
+        body = MIMEText(content, 'plain')
+        msg.attach(body)
+
+        try:
+            server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+            server.starttls()
+            server.login(SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD)
+            server.sendmail(SYSTEM_EMAIL, subscriber, msg.as_string())
+            server.quit()
+        except smtplib.SMTPDataError as e:
+            print(f"Failed to send email to {subscriber}: {e}")
