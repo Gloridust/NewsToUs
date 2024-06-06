@@ -24,9 +24,28 @@ def check_incoming_emails():
             send_newsletter(content)
         else:
             add_subscriber(sender)
+            send_welcome_email(sender)
 
     mail.close()
     mail.logout()
+
+def send_welcome_email(subscriber_email):
+    subject = "您好！您已成功注册 Mail my news 服务！"
+    body = "感谢您注册我们的服务。您将会定期收到我们的新闻简报。"
+
+    msg = MIMEMultipart()
+    msg['From'] = SYSTEM_EMAIL
+    msg['To'] = subscriber_email
+    msg['Subject'] = subject
+    
+    body_part = MIMEText(body, 'plain')
+    msg.attach(body_part)
+
+    server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+    server.starttls()
+    server.login(SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD)
+    server.sendmail(SYSTEM_EMAIL, subscriber_email, msg.as_string())
+    server.quit()
 
 def send_newsletter(content):
     subscribers = get_subscribers()

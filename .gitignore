@@ -1,1 +1,3 @@
 config.py
+subscribers.db
+__pycache__/
