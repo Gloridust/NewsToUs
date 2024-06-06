@@ -1,11 +1,10 @@
-# email_handler.py
 import imaplib
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.parser import BytesParser
 from config import SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD, IMAP_SERVER, SMTP_SERVER, SMTP_PORT, ADMIN_EMAIL
-from database.py import add_subscriber, get_subscribers
+from database import add_subscriber, get_subscribers
 
 def check_incoming_emails():
     mail = imaplib.IMAP4_SSL(IMAP_SERVER)
