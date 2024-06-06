@@ -16,7 +16,7 @@ def init_db():
 def add_subscriber(email):
     conn = sqlite3.connect('subscribers.db')
     c = conn.cursor()
-    c.execute('INSERT OR IGNORE INTO subscribers (email) VALUES (?)', (email,))
+    c.execute('INSERT OR IGNORE INTO subscribers (email, welcome_sent) VALUES (?, 0)', (email,))
     conn.commit()
     conn.close()
 
