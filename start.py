@@ -2,5 +2,5 @@ import main
 import time
 
 while True:
-    main()
+    main.main()
     time.sleep(3)
