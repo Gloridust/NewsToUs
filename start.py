@@ -3,4 +3,4 @@ import time
 
 while True:
     main()
-    time.sleep(5)
+    time.sleep(3)
