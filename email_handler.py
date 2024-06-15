@@ -30,14 +30,15 @@ def check_incoming_emails():
                         content = email_message.get_payload(decode=True).decode()
                         send_newsletter(subject, content)
                     else:
-                        add_subscriber(sender)
+                        email_address = email_message['From'].split('<')[1].strip('>')
+                        add_subscriber(email_address)
                         new_subscribers = get_new_subscribers()
-                        if sender in new_subscribers:
+                        if email_address in new_subscribers:
                             try:
-                                send_welcome_email(sender)
-                                mark_welcome_sent(sender)
+                                send_welcome_email(email_address)
+                                mark_welcome_sent(email_address)
                             except smtplib.SMTPDataError as e:
-                                print(f"Failed to send welcome email to {sender}: {e}")
+                                print(f"Failed to send welcome email to {email_address}: {e}")
 
     mail.close()
     mail.logout()
