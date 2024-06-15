@@ -4,6 +4,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.parser import BytesParser
 from email.header import decode_header
+from email.policy import default
 from config import SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD, IMAP_SERVER, SMTP_SERVER, SMTP_PORT, ADMIN_EMAIL
 from database import add_subscriber, get_subscribers, mark_welcome_sent, get_new_subscribers
 
@@ -22,7 +23,7 @@ def check_incoming_emails():
             for response_part in msg_data:
                 if isinstance(response_part, tuple):
                     raw_email = response_part[1]
-                    email_message = BytesParser().parsebytes(raw_email)
+                    email_message = BytesParser(policy=default).parsebytes(raw_email)
                     
                     # 提取发件人地址
                     sender = email_message['From']
@@ -38,7 +39,8 @@ def check_incoming_emails():
                         subject, encoding = decode_header(email_message['Subject'])[0]
                         if isinstance(subject, bytes):
                             subject = subject.decode(encoding or 'utf-8')
-                        content = email_message.get_payload(decode=True).decode()
+                        
+                        content = get_email_body(email_message)
                         print(f"Admin email detected. Subject: {subject}")
                         send_newsletter(subject, content)
                     else:
@@ -53,6 +55,17 @@ def check_incoming_emails():
 
     mail.close()
     mail.logout()
+
+def get_email_body(email_message):
+    if email_message.is_multipart():
+        for part in email_message.walk():
+            content_type = part.get_content_type()
+            content_disposition = str(part.get("Content-Disposition"))
+            if "attachment" not in content_disposition:
+                if content_type == "text/plain":
+                    return part.get_payload(decode=True).decode(part.get_content_charset())
+    else:
+        return email_message.get_payload(decode=True).decode(email_message.get_content_charset())
 
 def send_welcome_email(subscriber_email):
     subject = "您好！您已成功注册 Mail my news 服务！"
