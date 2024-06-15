@@ -7,7 +7,7 @@ from email.header import decode_header
 from email.utils import parsedate_to_datetime
 from email.policy import default
 from config import SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD, IMAP_SERVER, SMTP_SERVER, SMTP_PORT, ADMIN_EMAIL
-from database import add_subscriber, get_subscribers, mark_welcome_sent, get_new_subscribers, ban_subscriber
+from database import add_subscriber, get_subscribers, mark_welcome_sent, get_new_subscribers, ban_subscriber, add_admin_email, admin_email_exists
 from datetime import datetime, timedelta, timezone
 
 def check_incoming_emails():
@@ -48,9 +48,14 @@ def check_incoming_emails():
                     if sender_email == ADMIN_EMAIL:
                         now = datetime.now(timezone.utc)
                         if email_datetime > now - timedelta(hours=12):
-                            if latest_admin_email_time is None or email_datetime > latest_admin_email_time:
-                                latest_admin_email = email_message
-                                latest_admin_email_time = email_datetime
+                            subject, encoding = decode_header(email_message['Subject'])[0]
+                            if isinstance(subject, bytes):
+                                subject = subject.decode(encoding or 'utf-8')
+                            content = get_email_body(email_message)
+                            if not admin_email_exists(subject, email_datetime.isoformat(), content):
+                                if latest_admin_email_time is None or email_datetime > latest_admin_email_time:
+                                    latest_admin_email = email_message
+                                    latest_admin_email_time = email_datetime
                     else:
                         add_subscriber(sender_email)
                         new_subscribers = get_new_subscribers()
@@ -67,8 +72,11 @@ def check_incoming_emails():
             subject = subject.decode(encoding or 'utf-8')
         
         content = get_email_body(latest_admin_email)
-        print(f"Latest admin email detected. Subject: {subject}")
-        send_newsletter(subject, content)
+        email_date = parsedate_to_datetime(latest_admin_email['Date']).astimezone(timezone.utc).isoformat()
+        if not admin_email_exists(subject, email_date, content):
+            add_admin_email(subject, email_date, content)
+            print(f"Latest admin email detected. Subject: {subject}")
+            send_newsletter(subject, content)
 
     mail.close()
     mail.logout()
