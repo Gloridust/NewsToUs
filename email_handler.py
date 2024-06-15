@@ -8,7 +8,7 @@ from email.utils import parsedate_to_datetime
 from email.policy import default
 from config import SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD, IMAP_SERVER, SMTP_SERVER, SMTP_PORT, ADMIN_EMAIL
 from database import add_subscriber, get_subscribers, mark_welcome_sent, get_new_subscribers, ban_subscriber
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 def check_incoming_emails():
     mail = imaplib.IMAP4_SSL(IMAP_SERVER)
@@ -42,11 +42,11 @@ def check_incoming_emails():
 
                     # 提取邮件发送时间
                     email_date = email_message['Date']
-                    email_datetime = parsedate_to_datetime(email_date)
+                    email_datetime = parsedate_to_datetime(email_date).astimezone(timezone.utc)
                     print(f"Email received on: {email_datetime}")
 
                     if sender_email == ADMIN_EMAIL:
-                        now = datetime.now()
+                        now = datetime.now(timezone.utc)
                         if email_datetime > now - timedelta(hours=12):
                             if latest_admin_email_time is None or email_datetime > latest_admin_email_time:
                                 latest_admin_email = email_message
