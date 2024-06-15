@@ -24,10 +24,17 @@ def check_incoming_emails():
                     raw_email = response_part[1]
                     email_message = BytesParser().parsebytes(raw_email)
                     
+                    # 提取发件人地址
                     sender = email_message['From']
-                    print(f"Processing email from: {sender}")
+                    sender_email = None
+                    if '<' in sender and '>' in sender:
+                        sender_email = sender.split('<')[1].split('>')[0]
+                    else:
+                        sender_email = sender
 
-                    if sender.strip() == ADMIN_EMAIL:
+                    print(f"Processing email from: {sender_email}")
+
+                    if sender_email == ADMIN_EMAIL:
                         subject, encoding = decode_header(email_message['Subject'])[0]
                         if isinstance(subject, bytes):
                             subject = subject.decode(encoding or 'utf-8')
@@ -35,15 +42,14 @@ def check_incoming_emails():
                         print(f"Admin email detected. Subject: {subject}")
                         send_newsletter(subject, content)
                     else:
-                        email_address = email_message['From'].split('<')[1].strip('>')
-                        add_subscriber(email_address)
+                        add_subscriber(sender_email)
                         new_subscribers = get_new_subscribers()
-                        if email_address in new_subscribers:
+                        if sender_email in new_subscribers:
                             try:
-                                send_welcome_email(email_address)
-                                mark_welcome_sent(email_address)
+                                send_welcome_email(sender_email)
+                                mark_welcome_sent(sender_email)
                             except smtplib.SMTPDataError as e:
-                                print(f"Failed to send welcome email to {email_address}: {e}")
+                                print(f"Failed to send welcome email to {sender_email}: {e}")
 
     mail.close()
     mail.logout()
