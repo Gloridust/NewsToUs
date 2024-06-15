@@ -11,6 +11,14 @@ def init_db():
             ban BOOLEAN NOT NULL DEFAULT 0
         )
     ''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS admin_emails (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            subject TEXT NOT NULL,
+            date TEXT NOT NULL,
+            body TEXT NOT NULL
+        )
+    ''')
     conn.commit()
     conn.close()
 
@@ -55,3 +63,20 @@ def ban_subscriber(email):
     conn.commit()
     conn.close()
     print(f"Banned subscriber: {email}")
+
+def add_admin_email(subject, date, body):
+    conn = sqlite3.connect('subscribers.db')
+    c = conn.cursor()
+    c.execute('INSERT INTO admin_emails (subject, date, body) VALUES (?, ?, ?)', (subject, date, body))
+    conn.commit()
+    conn.close()
+    print(f"Added admin email: {subject} on {date}")
+
+def admin_email_exists(subject, date, body):
+    conn = sqlite3.connect('subscribers.db')
+    c = conn.cursor()
+    c.execute('SELECT COUNT(*) FROM admin_emails WHERE subject = ? AND date = ? AND body = ?', (subject, date, body))
+    exists = c.fetchone()[0] > 0
+    conn.close()
+    print(f"Admin email exists: {exists}")
+    return exists
