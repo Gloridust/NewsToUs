@@ -6,7 +6,7 @@ from email.parser import BytesParser
 from email.header import decode_header
 from email.utils import parsedate_to_datetime
 from email.policy import default
-from config import SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD, IMAP_SERVER, SMTP_SERVER, SMTP_PORT, ADMIN_EMAIL
+from config import SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD, IMAP_SERVER, SMTP_SERVER, SMTP_PORT, ADMIN_EMAIL,ADMIN_EMAIL_HOURS_LIMIT
 from database import add_subscriber, get_subscribers, mark_welcome_sent, get_new_subscribers, ban_subscriber, add_admin_email, admin_email_exists
 from datetime import datetime, timedelta, timezone
 
@@ -47,7 +47,7 @@ def check_incoming_emails():
 
                     if sender_email == ADMIN_EMAIL:
                         now = datetime.now(timezone.utc)
-                        if email_datetime > now - timedelta(hours=12):
+                        if email_datetime > now - timedelta(ADMIN_EMAIL_HOURS_LIMIT):
                             subject, encoding = decode_header(email_message['Subject'])[0]
                             if isinstance(subject, bytes):
                                 subject = subject.decode(encoding or 'utf-8')

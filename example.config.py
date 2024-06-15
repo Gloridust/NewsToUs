@@ -5,3 +5,5 @@ IMAP_SERVER = "imap.example.com"
 IMAP_PORT = 993
 SMTP_SERVER = "smtp.example.com"
 SMTP_PORT = 587
+
+ADMIN_EMAIL_HOURS_LIMIT = 12
