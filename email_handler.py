@@ -5,11 +5,11 @@ from email.mime.multipart import MIMEMultipart
 from email.parser import BytesParser
 from email.header import decode_header
 from email.policy import default
-from config import SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD, IMAP_SERVER, SMTP_SERVER, SMTP_PORT, ADMIN_EMAIL
+from config import SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD, IMAP_SERVER, IMAP_PORT, SMTP_SERVER, SMTP_PORT, ADMIN_EMAIL
 from database import add_subscriber, get_subscribers, mark_welcome_sent, get_new_subscribers
 
 def check_incoming_emails():
-    mail = imaplib.IMAP4_SSL(IMAP_SERVER)
+    mail = imaplib.IMAP4_SSL(IMAP_SERVER, IMAP_PORT)
     mail.login(SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD)
     mail.select('inbox')
 
