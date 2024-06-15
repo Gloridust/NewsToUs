@@ -14,6 +14,8 @@ def check_incoming_emails():
 
     result, data = mail.search(None, 'ALL')
     email_ids = data[0].split()
+    print(f"Found emails: {email_ids}")
+
     for email_id in email_ids:
         result, msg_data = mail.fetch(email_id, '(RFC822)')
         if result == 'OK':
@@ -23,11 +25,14 @@ def check_incoming_emails():
                     email_message = BytesParser().parsebytes(raw_email)
                     
                     sender = email_message['From']
+                    print(f"Processing email from: {sender}")
+
                     if sender.strip() == ADMIN_EMAIL:
                         subject, encoding = decode_header(email_message['Subject'])[0]
                         if isinstance(subject, bytes):
                             subject = subject.decode(encoding or 'utf-8')
                         content = email_message.get_payload(decode=True).decode()
+                        print(f"Admin email detected. Subject: {subject}")
                         send_newsletter(subject, content)
                     else:
                         email_address = email_message['From'].split('<')[1].strip('>')
@@ -61,6 +66,7 @@ def send_welcome_email(subscriber_email):
         server.login(SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD)
         server.sendmail(SYSTEM_EMAIL, subscriber_email, msg.as_string())
         server.quit()
+        print(f"Sent welcome email to: {subscriber_email}")
     except smtplib.SMTPDataError as e:
         print(f"Failed to send welcome email to {subscriber_email}: {e}")
 
@@ -81,5 +87,6 @@ def send_newsletter(subject, content):
             server.login(SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD)
             server.sendmail(SYSTEM_EMAIL, subscriber, msg.as_string())
             server.quit()
+            print(f"Sent newsletter to: {subscriber}")
         except smtplib.SMTPDataError as e:
             print(f"Failed to send email to {subscriber}: {e}")
