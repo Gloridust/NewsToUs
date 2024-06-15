@@ -4,7 +4,7 @@ import time
 loop_times = 0
 while True:
     loop_times = loop_times + 1
-    print(">>>loop {looptime} start")
+    print(f">>>loop {loop_times} start")
     main.main()
     time.sleep(5)
-    print(">>>loop {looptime} end")
+    print(f">>>loop {loop_times} end")
