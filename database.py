@@ -7,7 +7,8 @@ def init_db():
         CREATE TABLE IF NOT EXISTS subscribers (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email TEXT NOT NULL UNIQUE,
-            welcome_sent BOOLEAN NOT NULL DEFAULT 0
+            welcome_sent BOOLEAN NOT NULL DEFAULT 0,
+            ban BOOLEAN NOT NULL DEFAULT 0
         )
     ''')
     conn.commit()
@@ -16,7 +17,7 @@ def init_db():
 def add_subscriber(email):
     conn = sqlite3.connect('subscribers.db')
     c = conn.cursor()
-    c.execute('INSERT OR IGNORE INTO subscribers (email, welcome_sent) VALUES (?, 0)', (email,))
+    c.execute('INSERT OR IGNORE INTO subscribers (email, welcome_sent, ban) VALUES (?, 0, 0)', (email,))
     conn.commit()
     conn.close()
     print(f"Added subscriber: {email}")
@@ -24,7 +25,7 @@ def add_subscriber(email):
 def get_subscribers():
     conn = sqlite3.connect('subscribers.db')
     c = conn.cursor()
-    c.execute('SELECT email FROM subscribers')
+    c.execute('SELECT email FROM subscribers WHERE ban = 0')
     emails = [row[0] for row in c.fetchall()]
     conn.close()
     print(f"Fetched subscribers: {emails}")
@@ -41,8 +42,16 @@ def mark_welcome_sent(email):
 def get_new_subscribers():
     conn = sqlite3.connect('subscribers.db')
     c = conn.cursor()
-    c.execute('SELECT email FROM subscribers WHERE welcome_sent = 0')
+    c.execute('SELECT email FROM subscribers WHERE welcome_sent = 0 AND ban = 0')
     emails = [row[0] for row in c.fetchall()]
     conn.close()
     print(f"Fetched new subscribers: {emails}")
     return emails
+
+def ban_subscriber(email):
+    conn = sqlite3.connect('subscribers.db')
+    c = conn.cursor()
+    c.execute('UPDATE subscribers SET ban = 1 WHERE email = ?', (email,))
+    conn.commit()
+    conn.close()
+    print(f"Banned subscriber: {email}")
