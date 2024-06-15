@@ -1,6 +1,6 @@
 ![logo](_media/favicon-128.ico)
 
-# Newsto <small>.us</small>
+# NewsTo <small>.Us</small>
 
 > 最简单的科技新闻服务
 
