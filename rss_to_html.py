@@ -75,7 +75,7 @@ def main():
         "51CTO 推荐": "https://rsshub.app/51cto/index/recommend",
         # "智闻 AI": "https://rsshub.app/informedainews/zh-Hans/docs/world-news-daily",
         # "IT之家": "https://rsshub.app/ithome/ranking/24h",
-        # "v2ex 最热": "https://rsshub.app/v2ex/topics/latest"，
+        # "v2ex 最热": "https://rsshub.app/v2ex/topics/latest"
     }
     feeds = fetch_rss_data(rss_urls)
     html_content = generate_html(feeds)
