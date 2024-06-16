@@ -5,7 +5,9 @@ from datetime import datetime
 # 定义多个 RSS 订阅源 URL
 rss_urls = {
     "51CTO 推荐": "https://rsshub.app/51cto/index/recommend",
-    "v2ex 最热": "https://rsshub.app/v2ex/topics/latest"
+    # "智闻 AI": "https://rsshub.app/informedainews/zh-Hans/docs/world-news-daily",
+    # "IT之家": "https://rsshub.app/ithome/ranking/24h",
+    # "v2ex 最热": "https://rsshub.app/v2ex/topics/latest"，
 }
 
 # 初始化HTML内容
