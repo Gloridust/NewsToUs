@@ -2,24 +2,20 @@ import requests
 import feedparser
 from datetime import datetime
 
-# RSS订阅源URL
-rss_url = "https://rsshub.app/51cto/index/recommend"
+# 定义多个 RSS 订阅源 URL
+rss_urls = {
+    "51CTO 推荐": "https://rsshub.app/51cto/index/recommend",
+    "v2ex 最热": "https://rsshub.app/v2ex/topics/latest"
+}
 
-# 获取RSS数据
-response = requests.get(rss_url)
-rss_content = response.content
-
-# 解析RSS数据
-feed = feedparser.parse(rss_content)
-
-# 生成HTML内容
+# 初始化HTML内容
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RSS Feed</title>
+    <title>RSS Feeds</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
         .container { padding: 20px; }
@@ -35,20 +31,26 @@ html_content = """
     <div class="container">
 """
 
-# 添加RSS数据到HTML内容
-for entry in feed.entries:
-    title = entry.title
-    link = entry.link
-    description = entry.description
-    published = datetime(*entry.published_parsed[:6]).strftime('%Y-%m-%d %H:%M:%S')
+# 获取和解析每个RSS订阅源的数据
+for source_name, rss_url in rss_urls.items():
+    response = requests.get(rss_url)
+    rss_content = response.content
+    feed = feedparser.parse(rss_content)
 
-    html_content += f"""
-    <div class="feed-item">
-        <h2><a href="{link}">{title}</a></h2>
-        <time>{published}</time>
-        <p>{description}</p>
-    </div>
-    """
+    # 添加RSS数据到HTML内容
+    for entry in feed.entries:
+        title = entry.title
+        link = entry.link
+        description = entry.description
+        published = datetime(*entry.published_parsed[:6]).strftime('%Y-%m-%d %H:%M:%S')
+
+        html_content += f"""
+        <div class="feed-item">
+            <h2><a href="{link}">{title}</a></h2>
+            <time>{published} - {source_name}</time>
+            <p>{description}</p>
+        </div>
+        """
 
 html_content += """
     </div>
