@@ -1,5 +1,6 @@
 config.py
 subscribers.db
+rss-htmls/
 __pycache__/
 
 .DS_Store
