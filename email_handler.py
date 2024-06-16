@@ -6,7 +6,7 @@ from email.parser import BytesParser
 from email.header import decode_header
 from email.utils import parsedate_to_datetime
 from email.policy import default
-from config import SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD, IMAP_SERVER, SMTP_SERVER, SMTP_PORT, ADMIN_EMAIL,ADMIN_EMAIL_HOURS_LIMIT
+from config import SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD, IMAP_SERVER, SMTP_SERVER, SMTP_PORT, ADMIN_EMAIL
 from database import add_subscriber, get_subscribers, mark_welcome_sent, get_new_subscribers, ban_subscriber, add_admin_email, admin_email_exists
 from datetime import datetime, timedelta, timezone
 
@@ -47,7 +47,7 @@ def check_incoming_emails():
 
                     if sender_email == ADMIN_EMAIL:
                         now = datetime.now(timezone.utc)
-                        if email_datetime > now - timedelta(ADMIN_EMAIL_HOURS_LIMIT):
+                        if email_datetime > now - timedelta(hours=12):
                             subject, encoding = decode_header(email_message['Subject'])[0]
                             if isinstance(subject, bytes):
                                 subject = subject.decode(encoding or 'utf-8')
@@ -82,26 +82,38 @@ def check_incoming_emails():
     mail.logout()
 
 def get_email_body(email_message):
+    html_content = None
+    text_content = None
+
     if email_message.is_multipart():
         for part in email_message.walk():
             content_type = part.get_content_type()
             content_disposition = str(part.get("Content-Disposition"))
+
             if "attachment" not in content_disposition:
-                if content_type == "text/plain":
-                    return part.get_payload(decode=True).decode(part.get_content_charset())
+                if content_type == "text/html":
+                    html_content = part.get_payload(decode=True).decode(part.get_content_charset())
+                elif content_type == "text/plain":
+                    text_content = part.get_payload(decode=True).decode(part.get_content_charset())
+
     else:
-        return email_message.get_payload(decode=True).decode(email_message.get_content_charset())
+        if email_message.get_content_type() == "text/html":
+            html_content = email_message.get_payload(decode=True).decode(email_message.get_content_charset())
+        elif email_message.get_content_type() == "text/plain":
+            text_content = email_message.get_payload(decode=True).decode(email_message.get_content_charset())
+
+    return html_content if html_content else text_content
 
 def send_welcome_email(subscriber_email):
     subject = "您好！您已成功注册 Mail my news 服务！"
-    body = "感谢您注册我们的服务。您将会定期收到我们的新闻简报。"
+    body = "<p>感谢您注册我们的服务。您将会定期收到我们的新闻简报。</p>"
 
-    msg = MIMEMultipart()
+    msg = MIMEMultipart("alternative")
     msg['From'] = SYSTEM_EMAIL
     msg['To'] = subscriber_email
     msg['Subject'] = subject
     
-    body_part = MIMEText(body, 'plain')
+    body_part = MIMEText(body, 'html')
     msg.attach(body_part)
 
     try:
@@ -117,12 +129,12 @@ def send_welcome_email(subscriber_email):
 def send_newsletter(subject, content):
     subscribers = get_subscribers()
     for subscriber in subscribers:
-        msg = MIMEMultipart()
+        msg = MIMEMultipart("alternative")
         msg['From'] = SYSTEM_EMAIL
         msg['To'] = subscriber
         msg['Subject'] = subject
         
-        body = MIMEText(content, 'plain')
+        body = MIMEText(content, 'html') if content.startswith("<") else MIMEText(content, 'plain')
         msg.attach(body)
 
         try:
