@@ -19,7 +19,7 @@ def fetch_rss_data(rss_urls):
             })
     return feeds
 
-def generate_html(feeds, output_dir):
+def generate_html(feeds):
     today_date = datetime.now().strftime('%Y-%m-%d')
     html_content = f"""
     <!DOCTYPE html>
@@ -57,7 +57,10 @@ def generate_html(feeds, output_dir):
     </body>
     </html>
     """
+    return html_content
 
+def write_html_to_file(html_content, output_dir):
+    today_date = datetime.now().strftime('%Y-%m-%d')
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -75,7 +78,9 @@ def main():
         # "v2ex 最热": "https://rsshub.app/v2ex/topics/latest"，
     }
     feeds = fetch_rss_data(rss_urls)
-    generate_html(feeds, "./rss-htmls")
+    html_content = generate_html(feeds)
+    return html_content
 
 if __name__ == "__main__":
-    main()
+    html_content = main()
+    write_html_to_file(html_content, "./rss-htmls")
