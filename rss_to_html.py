@@ -77,7 +77,9 @@ def main():
         # "IT之家": "https://rsshub.app/ithome/ranking/24h",
         # "v2ex 最热": "https://rsshub.app/v2ex/topics/latest"
     }
+    print("fetching rss to data...")
     feeds = fetch_rss_data(rss_urls)
+    print("generating html...")
     html_content = generate_html(feeds)
     return html_content
 
