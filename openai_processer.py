@@ -41,6 +41,6 @@ def main(input_html):
     print(output_html)
 
 if __name__ == "__main__":
-    with open('./rss-htmls/rss_feed_2024-06-16.html','r') as f:
+    with open('./rss-htmls/rss_feed_2024-06-17.html','r') as f:
         input_html=f.read()
     main(input_html)
