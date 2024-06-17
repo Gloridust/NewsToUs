@@ -134,7 +134,8 @@ def send_newsletter(subject, content):
         msg['To'] = subscriber
         msg['Subject'] = subject
         
-        body = MIMEText(content, 'html') if content.startswith("<") else MIMEText(content, 'plain')
+        # body = MIMEText(content, 'html') if content.startswith("<") else MIMEText(content, 'plain')
+        body = MIMEText(content, 'html')  # Ensure content is sent as HTML
         msg.attach(body)
 
         try:
