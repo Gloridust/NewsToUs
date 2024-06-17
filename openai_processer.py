@@ -39,6 +39,7 @@ def generate_html(text):
 def main(input_html):
     output_html=generate_html(sys_prompt+input_html)
     print(output_html)
+    return output_html
 
 if __name__ == "__main__":
     with open('./rss-htmls/rss_feed_2024-06-17.html','r') as f:
