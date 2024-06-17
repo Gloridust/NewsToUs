@@ -18,6 +18,7 @@ def main():
     input_html=rss_to_html.main()
     output_html=openai_processer.main(input_html)
     write_html_to_file(output_html,"./rss-htmls")
+    return output_html
     
 if __name__ == "__main__":
     main()
