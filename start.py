@@ -7,4 +7,4 @@ while True:
     print(f">>>loop {loop_times} start")
     main.main()
     print(f">>>loop {loop_times} end")
-    time.sleep(10)
+    time.sleep(5)

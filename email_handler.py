@@ -9,6 +9,7 @@ from email.policy import default
 from config import SYSTEM_EMAIL, SYSTEM_EMAIL_PASSWORD, IMAP_SERVER, SMTP_SERVER, SMTP_PORT, ADMIN_EMAIL
 from database import add_subscriber, get_subscribers, mark_welcome_sent, get_new_subscribers, ban_subscriber, add_admin_email, admin_email_exists
 from datetime import datetime, timedelta, timezone
+import news_reporter
 
 def check_incoming_emails():
     mail = imaplib.IMAP4_SSL(IMAP_SERVER)
@@ -147,3 +148,11 @@ def send_newsletter(subject, content):
         except smtplib.SMTPDataError as e:
             print(f"Failed to send email to {subscriber}: {e}")
             ban_subscriber(subscriber)
+
+def handle_news_report():
+    subject, output_html = news_reporter.main()  # Assuming news_reporter.main returns a subject and HTML content
+    email_date = datetime.now(timezone.utc).isoformat()
+    if not admin_email_exists(subject, email_date, output_html):
+        add_admin_email(subject, email_date, output_html)
+        print(f"Daily news report detected. Subject: {subject}")
+        send_newsletter(subject, output_html)
