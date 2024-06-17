@@ -25,7 +25,7 @@ while True:
         print("sent_news_today 已重置为 False")
     
     # 如果 sent_news_today 为 False 且当前时间是 XX:XX，执行 news_reporter.main() 并设置 sent_news_today 为 True
-    if not sent_news_today and current_time.hour == 16 and current_time.minute == 45:
+    if not sent_news_today and current_time.hour == config.news_send_hour and current_time.minute == config.news_send_min:
         output_html=news_reporter.main()
         subject="NewsToUs:"+datetime.now().strftime('%Y-%m-%d')
         email_handler.send_newsletter(subject, output_html)
