@@ -12,7 +12,7 @@ def write_html_to_file(html_content, output_dir):
     with open(output_file, "w", encoding="utf-8") as file:
         file.write(html_content)
 
-    print(f"HTML 资讯页面已生成：{output_file}")
+    print(f"HTML 资讯精简页面已生成：{output_file}")
 
 def main():
     input_html=rss_to_html.main()
