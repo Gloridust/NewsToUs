@@ -22,8 +22,8 @@ while True:
         sent_news_today = False
         print("sent_news_today 已重置为 False")
     
-    # 如果 sent_news_today 为 False 且当前时间是 15:30，执行 news_reporter.main() 并设置 sent_news_today 为 True
-    if not sent_news_today and current_time.hour == 15 and current_time.minute == 30:
+    # 如果 sent_news_today 为 False 且当前时间是 16:30，执行 news_reporter.main() 并设置 sent_news_today 为 True
+    if not sent_news_today and current_time.hour == 16 and current_time.minute == 30:
         news_reporter.main()
         sent_news_today = True
         print(f"news_reporter.main() 已在 {current_time.strftime('%Y-%m-%d %H:%M:%S')} 执行，sent_news_today 设为 True。")
