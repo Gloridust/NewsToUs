@@ -105,7 +105,7 @@ def get_email_body(email_message):
     return html_content if html_content else text_content
 
 def send_welcome_email(subscriber_email):
-    subject = "您好！您已成功注册 Mail my news 服务！"
+    subject = "您好！您已成功注册 NewsToUs 服务！"
     body = "<p>感谢您注册我们的服务。您将会定期收到我们的新闻简报。</p>"
 
     msg = MIMEMultipart("alternative")
