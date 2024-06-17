@@ -2,6 +2,7 @@ import main
 import time
 import datetime
 import news_reporter
+import email_handler
 
 sent_news_today = False
 
@@ -24,7 +25,9 @@ while True:
     
     # 如果 sent_news_today 为 False 且当前时间是 16:30，执行 news_reporter.main() 并设置 sent_news_today 为 True
     if not sent_news_today and current_time.hour == 16 and current_time.minute == 30:
-        news_reporter.main()
+        output_html=news_reporter.main()
+        subject="NewsToUs:"+datetime.now().strftime('%Y-%m-%d')
+        email_handler.send_newsletter(subject, output_html)
         sent_news_today = True
         print(f"news_reporter.main() 已在 {current_time.strftime('%Y-%m-%d %H:%M:%S')} 执行，sent_news_today 设为 True。")
         time.sleep(30)
