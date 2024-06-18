@@ -34,4 +34,4 @@ while True:
         time.sleep(10)
 
     print(f">>>loop {loop_times} end")
-    time.sleep(5)
+    time.sleep(3)
