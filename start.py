@@ -38,6 +38,6 @@ while True:
     stop_all = time.perf_counter()
     print("main time:",stop_main - start_all)
     print("news_reporter time:",stop_all - start_news_reporter)
-    print("news_reporter time:",stop_all - start_all)
+    print("All time:",stop_all - start_all)
     
     time.sleep(3)
