@@ -12,11 +12,12 @@ while True:
     loop_times = loop_times + 1
     print(f">>>loop {loop_times} start")
     print(f">>>main start")
-
+    start_all = time.perf_counter()
     main.main()
-
+    stop_main = time.perf_counter()
     print(f">>>news_reporter start")
-
+    start_news_reporter = time.perf_counter()
+    
     current_time = datetime.now()
     
     # 如果当前时间是23:59，重置 sent_news_today
@@ -34,4 +35,9 @@ while True:
         time.sleep(10)
 
     print(f">>>loop {loop_times} end")
+    stop_all = time.perf_counter()
+    print("main time:",stop_main - start_all)
+    print("news_reporter time:",stop_all - start_news_reporter)
+    print("news_reporter time:",stop_all - start_all)
+    
     time.sleep(3)

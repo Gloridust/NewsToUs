@@ -2,6 +2,7 @@ config.py
 subscribers.db
 rss-htmls/
 __pycache__/
+backup/
 
 .DS_Store
 .idea
