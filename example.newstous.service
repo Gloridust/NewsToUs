@@ -1,0 +1,17 @@
+[Unit]
+Description=NewsToUs Service
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/root/NewsToUs
+ExecStart=/usr/bin/python3 /root/NewsToUs/start.py
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=newstous
+
+[Install]
+WantedBy=multi-user.target
