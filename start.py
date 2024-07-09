@@ -32,6 +32,7 @@ def check_and_send_news():
 
 loop_times = 0
 initialize_sent_news()
+last_reset_date = datetime.now().date()
 
 while True:
     loop_times = loop_times + 1
@@ -42,6 +43,11 @@ while True:
     stop_main = time.perf_counter()
     print(f">>>news_reporter start")
     start_news_reporter = time.perf_counter()
+
+    current_date = datetime.now().date()
+    if current_date != last_reset_date:
+        initialize_sent_news()
+        last_reset_date = current_date
 
     check_and_send_news()
 
